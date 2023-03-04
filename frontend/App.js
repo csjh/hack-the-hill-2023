@@ -1,5 +1,6 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import { useState } from "react";
+
 import {
   StyleSheet,
   Text,
@@ -7,11 +8,12 @@ import {
   TouchableOpacity,
   Alert,
   ImageBackground,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Camera } from "expo-camera";
 import Svg, { Path } from "react-native-svg";
 
-let camera;
+
 
 const PlayButton = () => {
   return (
@@ -30,8 +32,8 @@ const PauseButton = () => {
 };
 
 export default function App() {
-  const [capturedImage, setCapturedImage] = React.useState(null);
-  const [paused, setPaused] = React.useState(false);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [paused, setPaused] = useState(false);
 
   const requestPermissions = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
@@ -45,7 +47,7 @@ export default function App() {
       setPaused(false);
     } else {
       await requestPermissions();
-      const photo = await camera.takePictureAsync({ skipProcessing: true });
+      const photo = await this.camera.takePictureAsync({ skipProcessing: true });
       console.log(photo);
       setCapturedImage(photo);
       setPaused(true);
@@ -59,14 +61,16 @@ export default function App() {
           width: "100%",
         }}
       >
-        <CapturedImage photo={capturedImage} show={paused} />
-        <Camera
-          type={Camera.Constants.Type.back}
-          style={{ flex: 10, display: paused ? "none" : "show" }}
-          ref={(r) => {
-            camera = r;
-          }}
-        />
+        <TouchableWithoutFeedback onPress={(e) => console.log(`x is ${e.nativeEvent.locationX}, y is ${e.nativeEvent.locationY}`)}>
+          <CapturedImage photo={capturedImage} show={paused} />
+          <Camera
+            type={Camera.Constants.Type.back}
+            style={{ flex: 10, display: paused ? "none" : "show" }}
+            ref={(r) => {
+              camera = r;
+            }}
+          />
+          </TouchableWithoutFeedback>
         <View
           style={{
             flex: 1.5,
@@ -75,13 +79,17 @@ export default function App() {
           }}
         >
           <TouchableOpacity
-            onPress={captureImage}
+            onPress={(e) => {
+              captureImage()
+              
+
+            }}
             style={{
               borderRadius: 100,
               borderColor: "white",
               borderWidth: 4,
               width: "20%",
-              flex: 0.85,
+              flex: 0.7,
               top: "7.5%",
             }}
           >
