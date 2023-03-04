@@ -46,9 +46,7 @@ export default function App() {
       setPaused(false);
     } else {
       await requestPermissions();
-      const photo = await this.camera.takePictureAsync({
-        skipProcessing: true,
-      });
+      const photo = await this.camera.takePictureAsync({ skipProcessing: true });
       console.log(photo);
       setCapturedImage(photo);
       setPaused(true);
@@ -82,7 +80,7 @@ export default function App() {
             type={Camera.Constants.Type.back}
             style={{ flex: 10, display: paused ? "none" : "show" }}
             ref={(r) => {
-              camera = r;
+              this.camera = r;
             }}
           />
         </TouchableWithoutFeedback>
