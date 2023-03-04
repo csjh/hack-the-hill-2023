@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import Svg, { Path } from "react-native-svg";
+import FileSystem from "expo-file-system";
 
 let camera;
 
@@ -46,6 +47,8 @@ export default function App() {
     } else {
       await requestPermissions();
       const photo = await camera.takePictureAsync({ skipProcessing: true });
+      const file = await FileSystem.readAsStringAsync(photo.uri);
+      console.log(file);
       console.log(photo);
       setCapturedImage(photo);
       setPaused(true);
