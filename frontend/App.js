@@ -49,8 +49,6 @@ export default function App() {
       const photo = await this.camera.takePictureAsync({
         skipProcessing: true,
       });
-      const file = await FileSystem.readAsStringAsync(photo.uri);
-      console.log(file);
       console.log(photo);
       setCapturedImage(photo);
       setPaused(true);
