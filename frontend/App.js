@@ -63,17 +63,14 @@ export default function App() {
           width: "100%",
         }}
       >
-        {paused ? (
-          <CapturedImage photo={capturedImage} />
-        ) : (
+          <CapturedImage photo={capturedImage} show={paused} />
           <Camera
             type={Camera.Constants.Type.back}
-            style={{ flex: 10 }}
+            style={{ flex: 10, display: paused? "none" : "show" }}
             ref={(r) => {
               camera = r;
             }}
           />
-        )}
         <View
           style={{
             flex: 1.5,
@@ -111,11 +108,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const CapturedImage = ({ photo }) => {
+const CapturedImage = ({ photo, show }) => {
   return (
     <View
       style={{
         backgroundColor: "transparent",
+        display: show ? "flex" : "none",
         flex: 10,
         width: "100%",
         height: "100%",
