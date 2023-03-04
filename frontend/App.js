@@ -30,17 +30,13 @@ const PauseButton = () => {
 };
 
 export default function App() {
-  const [startCamera, setStartCamera] = React.useState(false);
-  const [previewVisible, setPreviewVisible] = React.useState(false);
   const [capturedImage, setCapturedImage] = React.useState(null);
   const [paused, setPaused] = React.useState(false);
 
   const requestPermissions = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
     console.log(status);
-    if (status === "granted") {
-      setStartCamera(true);
-    } else {
+    if (status !== "granted") {
       Alert.alert("Camera access is required to use Colour Sense!");
     }
   };
@@ -48,9 +44,9 @@ export default function App() {
     if (paused) {
       setPaused(false);
     } else {
-      const photo = await camera.takePictureAsync();
+      await requestPermissions();
+      const photo = await camera.takePictureAsync({ skipProcessing: true });
       console.log(photo);
-      setPreviewVisible(true);
       setCapturedImage(photo);
       setPaused(true);
     }
@@ -63,17 +59,14 @@ export default function App() {
           width: "100%",
         }}
       >
-        {paused ? (
-          <CapturedImage photo={capturedImage} />
-        ) : (
-          <Camera
-            type={Camera.Constants.Type.back}
-            style={{ flex: 10 }}
-            ref={(r) => {
-              camera = r;
-            }}
-          />
-        )}
+        <CapturedImage photo={capturedImage} show={paused} />
+        <Camera
+          type={Camera.Constants.Type.back}
+          style={{ flex: 10, display: paused ? "none" : "show" }}
+          ref={(r) => {
+            camera = r;
+          }}
+        />
         <View
           style={{
             flex: 1.5,
@@ -111,11 +104,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const CapturedImage = ({ photo }) => {
+const CapturedImage = ({ photo, show }) => {
   return (
     <View
       style={{
         backgroundColor: "transparent",
+        display: show ? "flex" : "none",
         flex: 10,
         width: "100%",
         height: "100%",
