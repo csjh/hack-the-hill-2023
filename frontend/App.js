@@ -32,17 +32,13 @@ const PauseButton = () => {
 };
 
 export default function App() {
-  const [startCamera, setStartCamera] = useState(false);
-  const [previewVisible, setPreviewVisible] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [paused, setPaused] = useState(false);
 
   const requestPermissions = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
     console.log(status);
-    if (status === "granted") {
-      setStartCamera(true);
-    } else {
+    if (status !== "granted") {
       Alert.alert("Camera access is required to use Colour Sense!");
     }
   };
@@ -50,9 +46,9 @@ export default function App() {
     if (paused) {
       setPaused(false);
     } else {
-      const photo = await this.camera.takePictureAsync();
-      console.log();
-      setPreviewVisible(true);
+      await requestPermissions();
+      const photo = await this.camera.takePictureAsync({ skipProcessing: true });
+      console.log(photo);
       setCapturedImage(photo);
       setPaused(true);
     }
@@ -65,20 +61,16 @@ export default function App() {
           width: "100%",
         }}
       >
-        {paused ? (
-          <CapturedImage photo={capturedImage}/>
-        ) : (
-          <TouchableWithoutFeedback onPress={(e) => console.log(`x is ${e.nativeEvent.locationX}, y is ${e.nativeEvent.locationY}`)}>
-            <Camera
-            
+        <TouchableWithoutFeedback onPress={(e) => console.log(`x is ${e.nativeEvent.locationX}, y is ${e.nativeEvent.locationY}`)}>
+          <CapturedImage photo={capturedImage} show={paused} />
+          <Camera
             type={Camera.Constants.Type.back}
-            style={{ flex: 10 }}
+            style={{ flex: 10, display: paused ? "none" : "show" }}
             ref={(r) => {
               camera = r;
             }}
           />
           </TouchableWithoutFeedback>
-        )}
         <View
           style={{
             flex: 1.5,
@@ -120,11 +112,12 @@ const styles = StyleSheet.create({
   },
 });
 
-const CapturedImage = ({ photo }) => {
+const CapturedImage = ({ photo, show }) => {
   return (
     <View
       style={{
         backgroundColor: "transparent",
+        display: show ? "flex" : "none",
         flex: 10,
         width: "100%",
         height: "100%",
