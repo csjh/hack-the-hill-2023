@@ -14,8 +14,6 @@ import { Camera } from "expo-camera";
 import Svg, { Path } from "react-native-svg";
 import FileSystem from "expo-file-system";
 
-
-
 const PlayButton = () => {
   return (
     <Svg width="100%" height="100%" viewBox="0 0 24 24">
@@ -48,6 +46,7 @@ export default function App() {
       setPaused(false);
     } else {
       await requestPermissions();
+
       const photo = await this.camera.takePictureAsync({ skipProcessing: true });
       const file = await FileSystem.readAsStringAsync(photo.uri);
       console.log(file);
@@ -64,8 +63,22 @@ export default function App() {
           width: "100%",
         }}
       >
-        <TouchableWithoutFeedback onPress={(e) => console.log(`x is ${e.nativeEvent.locationX}, y is ${e.nativeEvent.locationY}`)}>
+        <TouchableWithoutFeedback
+          onPress={(e) =>
+            console.log(
+              `x is ${e.nativeEvent.locationX}, y is ${e.nativeEvent.locationY}`
+            )
+          }
+        >
           <CapturedImage photo={capturedImage} show={paused} />
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
+          onPress={(e) =>
+            console.log(
+              `x is ${e.nativeEvent.locationX}, y is ${e.nativeEvent.locationY}`
+            )
+          }
+        >
           <Camera
             type={Camera.Constants.Type.back}
             style={{ flex: 10, display: paused ? "none" : "show" }}
@@ -73,7 +86,7 @@ export default function App() {
               this.camera = r;
             }}
           />
-          </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
         <View
           style={{
             flex: 1.5,
@@ -83,9 +96,7 @@ export default function App() {
         >
           <TouchableOpacity
             onPress={(e) => {
-              captureImage()
-              
-
+              captureImage();
             }}
             style={{
               borderRadius: 100,
