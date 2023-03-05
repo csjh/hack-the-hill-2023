@@ -14,6 +14,7 @@ import {
 import { Camera } from "expo-camera";
 import Svg, { Path } from "react-native-svg";
 import { manipulateAsync } from "expo-image-manipulator";
+import { getColorName } from "./getColours";
 
 const PlayButton = () => {
   return (
@@ -69,10 +70,7 @@ export default function App() {
         }),
       })
         .then((r) => r.json())
-        .then((r) => {
-          setPixels(r);
-          console.log(r);
-        });
+        .then(setPixels);
     }
   };
   return (
@@ -151,12 +149,10 @@ const CapturedImage = ({ photo, show, capturedImage, pixels, setPixels }) => {
         display: show ? "flex" : "none",
         flex: 10,
         width: "100%",
-        height: "100%",
-        borderColor: "#fff",
-        borderWidth: 1,
+        height: "100%"
       }}
     >
-      <TouchableWithoutFeedback onPress={handlePress}>
+      <TouchableWithoutFeedback onPress={handlePress} onPressIn={() => this.interval = setInterval(() => )}>
         <View style={{ flex: 1 }}>
           {circlePosition && (
             <ColorLabel pixels={pixels} circlePosition={circlePosition} />
@@ -174,8 +170,8 @@ const CapturedImage = ({ photo, show, capturedImage, pixels, setPixels }) => {
   );
 };
 
-const ColorLabel = ({ circlePosition }) => {
-  return (
+const ColorLabel = ({ circlePosition, pixels }) => {
+  return (<>
     <View
       style={{
         position: "absolute",
@@ -187,10 +183,25 @@ const ColorLabel = ({ circlePosition }) => {
         backgroundColor: "white",
         zIndex: 999,
         left: circlePosition.x - 50,
-        top: circlePosition.y - 90,
+        top: circlePosition.y - 80,
       }}
     >
-      <Text style={{ textAlign: "center" }}>Hello!</Text>
+      <Text style={{ textAlign: "center" }}>{getColorName(pixels[circlePosition.y][circlePosition.x])}</Text>
     </View>
-  );
+    <View
+      style={{
+        position: "absolute",
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        borderWidth: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "transparent",
+        zIndex: 999,
+        left: circlePosition.x - 15,
+        top: circlePosition.y - 15,
+      }}
+    ></View>
+    </>);
 };
