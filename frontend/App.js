@@ -152,7 +152,7 @@ const CapturedImage = ({ photo, show, capturedImage, pixels, setPixels }) => {
         height: "100%"
       }}
     >
-      <TouchableWithoutFeedback onPress={handlePress} onPressIn={() => this.interval = setInterval(() => )}>
+      <TouchableWithoutFeedback onPress={handlePress}>
         <View style={{ flex: 1 }}>
           {circlePosition && (
             <ColorLabel pixels={pixels} circlePosition={circlePosition} />
