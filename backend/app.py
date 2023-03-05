@@ -13,9 +13,11 @@ app = flask.Flask(__name__)
 
 cache = None
 
+import time
 
 @app.route("/get_all_pixels", methods=["POST"])
 def get_pixel():
+    rn = time.time()
     print("made it to the request")
     image = flask.request.json['image']
     image = Image.open(BytesIO(base64.b64decode(image)))
@@ -23,6 +25,7 @@ def get_pixel():
     pixels = [[list(image.getpixel((x, y))) 
                for x in range(image.width)]
                for y in range(image.height)]
+    print(time.time() - rn)
     return str(pixels)
 
 if __name__ == "__main__":
