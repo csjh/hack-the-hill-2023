@@ -26,6 +26,9 @@ def get_pixel():
                for y in range(image.height)]
     return str(pixels)
 
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')
+
 
 # @app.route('/get_objects', methods=['POST'])
 # def index():
