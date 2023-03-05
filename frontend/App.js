@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Dimensions } from "react-native";
 import {
@@ -15,6 +15,7 @@ import { Camera } from "expo-camera";
 import Svg, { Path } from "react-native-svg";
 import { manipulateAsync } from "expo-image-manipulator";
 import { getColorName } from "./getColours";
+import Speak from 'react-native-tts';
 
 const PlayButton = () => {
   return (
@@ -57,7 +58,11 @@ export default function App() {
         [{ resize: { width: Dimensions.get("screen").width } }],
         { compress: 0, format: "png", base64: true }
       );
-      console.log("Photo Size", manipulatedPhoto.height, manipulatedPhoto.width);
+      console.log(
+        "Photo Size",
+        manipulatedPhoto.height,
+        manipulatedPhoto.width
+      );
       setPaused(true);
       setCapturedImage(manipulatedPhoto);
       fetch("https://hack-the-north.onrender.com/get_all_pixels", {
@@ -68,7 +73,10 @@ export default function App() {
         }),
       })
         .then((r) => r.json())
-        .then((r) => {setPixels(r); console.log("Received data")});
+        .then((r) => {
+          setPixels(r);
+          console.log("Received data");
+        });
     }
   };
   return (
@@ -169,6 +177,10 @@ const CapturedImage = ({ photo, show, capturedImage, pixels, setPixels }) => {
 };
 
 const ColorLabel = ({ circlePosition, pixels }) => {
+  useEffect(() => {
+    Speak.speak(`You've selected ${getColorName(pixels[circlePosition.y][circlePosition.x])}`);
+  }, [circlePosition]);
+
   return (
     <>
       <View
@@ -198,7 +210,13 @@ const ColorLabel = ({ circlePosition, pixels }) => {
           borderWidth: 1,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: `#${pixels[circlePosition.y][circlePosition.x][0].toString(16).padStart(2)}${pixels[circlePosition.y][circlePosition.x][1].toString(16).padStart(2)}${pixels[circlePosition.y][circlePosition.x][2].toString(16).padStart(2)}`,
+          backgroundColor: `#${pixels[circlePosition.y][circlePosition.x][0]
+            .toString(16)
+            .padStart(2)}${pixels[circlePosition.y][circlePosition.x][1]
+            .toString(16)
+            .padStart(2)}${pixels[circlePosition.y][circlePosition.x][2]
+            .toString(16)
+            .padStart(2)}`,
           zIndex: 999,
           left: circlePosition.x - 15,
           top: circlePosition.y - 15,
