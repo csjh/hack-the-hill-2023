@@ -1,6 +1,5 @@
 import flask
 import base64
-import requests
 from io import BytesIO
 from PIL import Image
 # from imageai.Detection import ObjectDetection
