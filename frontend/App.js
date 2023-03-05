@@ -1,10 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import{extractColors} from "extract-colors"
-import { captureScreen } from "react-native-view-shot";
 
-
-
+import { Dimensions } from "react-native";
 import {
   StyleSheet,
   Text,
@@ -16,7 +13,7 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import Svg, { Path } from "react-native-svg";
-import Popup from "./Views/Popup";
+import { manipulateAsync } from "expo-image-manipulator"
 
 const PlayButton = () => {
   return (
@@ -55,23 +52,24 @@ export default function App() {
     } else {
       await requestPermissions();
       const photo = await this.camera.takePictureAsync({
-        base64: true
+        base64: true, quality: 0
       });
-      console.log("photo ", photo.height, photo.width)
+      const manipulatedPhoto = await manipulateAsync(photo.uri, [{ resize: { width: Dimensions.get("screen").width } }], { compress: 0, format: "png", base64: true })
+      console.log("photo ", manipulatedPhoto.height, manipulatedPhoto.width)
       console.log("i'm here")
-      fetch("http://127.0.0.1:5000/get_all_pixels", {
+      setPaused(true);
+      setCapturedImage(manipulatedPhoto);
+      fetch("https://hack-the-north.onrender.com/get_all_pixels", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          image: photo.base64,
+          image: manipulatedPhoto.base64,
         }),
       })
         .then((r) => r.json())
         .then((r) => {
           setPixels(r);
           console.log(r);
-          setCapturedImage(photo);
-          setPaused(true);
         });
     }
   };
@@ -112,7 +110,7 @@ export default function App() {
               borderRadius: 100,
               borderColor: "white",
               borderWidth: 4,
-              width: "13%",
+              width: "18%",
               flex: 0.6,
               top: "7.5%",
             }}
@@ -141,18 +139,6 @@ const CapturedImage = ({ photo, show, capturedImage, pixels, setPixels }) => {
 
   const handlePress = async (event) => {
     const { pageX = 0, pageY = 0 } = event.nativeEvent;
-    console.log("pageX ", pageX, "pageY ", pageY);
-    console.log(
-      "pixels ",
-      pixels[Math.round(pageY)],
-      pixels.length,
-      pixels[0].length
-    );
-    console.log(
-      `rgb(${pixels[Math.round(pageY)][Math.round(pageX)][0]}, ${
-        pixels[Math.round(pageY)][Math.round(pageX)][1]
-      }, ${pixels[Math.round(pageY)][Math.round(pageX)][2]})`
-    );
     setCirclePosition({ x: Math.round(pageX), y: Math.round(pageY) });
   };
 
