@@ -16,7 +16,6 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import Svg, { Path } from "react-native-svg";
-import FileSystem from "expo-file-system";
 import Popup from "./Views/Popup";
 
 const PlayButton = () => {
@@ -38,13 +37,14 @@ const PauseButton = () => {
 export default function App() {
   const [capturedImage, setCapturedImage] = useState(null);
   const [paused, setPaused] = useState(false);
+  const [pixels, setPixels] = useState(false);
 
 
   
 
   const requestPermissions = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
-    console.log(status);
+    console.log("status ", status);
     if (status !== "granted") {
       Alert.alert("Camera access is required to use Colour Sense!");
     }
@@ -54,8 +54,10 @@ export default function App() {
       setPaused(false);
     } else {
       await requestPermissions();
-      const photo = await this.camera.takePictureAsync({ skipProcessing: true });
-      console.log(photo);
+      const photo = await this.camera.takePictureAsync({
+        skipProcessing: true, base64: true, quality: 0
+      });
+      console.log(photo.base64.length);
       setCapturedImage(photo);
       setPaused(true);
     }
@@ -68,32 +70,14 @@ export default function App() {
           width: "100%",
         }}
       >
-        <TouchableWithoutFeedback
-          onPress={(e) =>
-            console.log(
-              `x1 is ${e.nativeEvent.locationX}, y is ${e.nativeEvent.locationY}`
-            )
-          }
-        >
-          <CapturedImage photo={capturedImage} show={paused} />
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-          onPress={(e) =>
-            {
-            {
-              console.log(
-              `x is ${e.nativeEvent.locationX}, y is ${e.nativeEvent.locationY}`
-            )}}
-          }
-        >
-          <Camera
-            type={Camera.Constants.Type.back}
-            style={{ flex: 10, display: paused ? "none" : "show" }}
-            ref={(r) => {
-              this.camera = r;
-            }}
-          />
-        </TouchableWithoutFeedback>
+        <CapturedImage photo={capturedImage} show={paused} capturedImage={capturedImage} setPixels={setPixels} />
+        <Camera
+          type={Camera.Constants.Type.back}
+          style={{ flex: 10, display: paused ? "none" : "show" }}
+          ref={(r) => {
+            this.camera = r;
+          }}
+        />
         <View
           style={{
             flex: 1.5,
@@ -133,27 +117,43 @@ const styles = StyleSheet.create({
   },
 });
 
-const CapturedImage = ({ photo, show }) => {
+const CapturedImage = ({ photo, show, capturedImage, setPixels }) => {
   return (
-    <View
-      style={{
-        backgroundColor: "transparent",
-        display: show ? "flex" : "none",
-        flex: 10,
-        width: "100%",
-        height: "100%",
-        borderColor: "#fff",
-        borderWidth: 1,
+    <TouchableWithoutFeedback
+      onPress={async (e) => {
+        console.log("in the request!!!");
+        const { locationX, locationY } = e.nativeEvent;
+        const pixelColors = await fetch("http://172.20.10.9:5000/get_pixel", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pixel: [locationX, locationY],
+            image: capturedImage.base64,
+          }),
+        }).then((r) => r.text());
+        console.log(pixelColors);
+        setPixels(pixelColors);
       }}
     >
-      <ImageBackground
-        source={{ uri: photo && photo.uri }}
+      <View
         style={{
-          flex: 1,
+          backgroundColor: "transparent",
+          display: show ? "flex" : "none",
+          flex: 10,
+          width: "100%",
           height: "100%",
+          borderColor: "#fff",
+          borderWidth: 1,
         }}
-      />
-
-    </View>
+      >
+        <ImageBackground
+          source={{ uri: photo && photo.uri }}
+          style={{
+            flex: 1,
+            height: "100%",
+          }}
+        />
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
