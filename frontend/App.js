@@ -1,5 +1,9 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
+import{extractColors} from "extract-colors"
+import { captureScreen } from "react-native-view-shot";
+
+
 
 import {
   StyleSheet,
@@ -13,6 +17,7 @@ import {
 import { Camera } from "expo-camera";
 import Svg, { Path } from "react-native-svg";
 import FileSystem from "expo-file-system";
+import Popup from "./Views/Popup";
 
 const PlayButton = () => {
   return (
@@ -33,6 +38,9 @@ const PauseButton = () => {
 export default function App() {
   const [capturedImage, setCapturedImage] = useState(null);
   const [paused, setPaused] = useState(false);
+
+
+  
 
   const requestPermissions = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
@@ -63,7 +71,7 @@ export default function App() {
         <TouchableWithoutFeedback
           onPress={(e) =>
             console.log(
-              `x is ${e.nativeEvent.locationX}, y is ${e.nativeEvent.locationY}`
+              `x1 is ${e.nativeEvent.locationX}, y is ${e.nativeEvent.locationY}`
             )
           }
         >
@@ -71,9 +79,11 @@ export default function App() {
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
           onPress={(e) =>
-            console.log(
+            {
+            {
+              console.log(
               `x is ${e.nativeEvent.locationX}, y is ${e.nativeEvent.locationY}`
-            )
+            )}}
           }
         >
           <Camera
@@ -99,8 +109,8 @@ export default function App() {
               borderRadius: 100,
               borderColor: "white",
               borderWidth: 4,
-              width: "20%",
-              flex: 0.7,
+              width: "13%",
+              flex: 0.6,
               top: "7.5%",
             }}
           >
@@ -143,6 +153,7 @@ const CapturedImage = ({ photo, show }) => {
           height: "100%",
         }}
       />
+
     </View>
   );
 };
