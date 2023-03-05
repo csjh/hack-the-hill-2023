@@ -1,5 +1,9 @@
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
+import{extractColors} from "extract-colors"
+import { captureScreen } from "react-native-view-shot";
+
+
 
 import {
   StyleSheet,
@@ -12,6 +16,7 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import Svg, { Path } from "react-native-svg";
+import Popup from "./Views/Popup";
 
 const PlayButton = () => {
   return (
@@ -33,6 +38,9 @@ export default function App() {
   const [capturedImage, setCapturedImage] = useState(null);
   const [paused, setPaused] = useState(false);
   const [pixels, setPixels] = useState(false);
+
+
+  
 
   const requestPermissions = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
@@ -104,8 +112,8 @@ export default function App() {
               borderRadius: 100,
               borderColor: "white",
               borderWidth: 4,
-              width: "20%",
-              flex: 0.7,
+              width: "13%",
+              flex: 0.6,
               top: "7.5%",
             }}
           >
