@@ -15,7 +15,7 @@ import { Camera } from "expo-camera";
 import Svg, { Path } from "react-native-svg";
 import { manipulateAsync } from "expo-image-manipulator";
 import { getColorName } from "./getColours";
-import Speak from 'react-native-tts';
+import * as Speak from 'expo-speech';
 
 const PlayButton = () => {
   return (
