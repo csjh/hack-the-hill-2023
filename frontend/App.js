@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import Svg, { Path } from "react-native-svg";
-import { manipulateAsync } from "expo-image-manipulator"
+import { manipulateAsync } from "expo-image-manipulator";
 
 const PlayButton = () => {
   return (
@@ -36,9 +36,6 @@ export default function App() {
   const [paused, setPaused] = useState(false);
   const [pixels, setPixels] = useState(false);
 
-
-  
-
   const requestPermissions = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
     console.log("status ", status);
@@ -52,11 +49,16 @@ export default function App() {
     } else {
       await requestPermissions();
       const photo = await this.camera.takePictureAsync({
-        base64: true, quality: 0
+        base64: true,
+        quality: 0,
       });
-      const manipulatedPhoto = await manipulateAsync(photo.uri, [{ resize: { width: Dimensions.get("screen").width } }], { compress: 0, format: "png", base64: true })
-      console.log("photo ", manipulatedPhoto.height, manipulatedPhoto.width)
-      console.log("i'm here")
+      const manipulatedPhoto = await manipulateAsync(
+        photo.uri,
+        [{ resize: { width: Dimensions.get("screen").width } }],
+        { compress: 0, format: "png", base64: true }
+      );
+      console.log("photo ", manipulatedPhoto.height, manipulatedPhoto.width);
+      console.log("i'm here");
       setPaused(true);
       setCapturedImage(manipulatedPhoto);
       fetch("https://hack-the-north.onrender.com/get_all_pixels", {
@@ -157,22 +159,7 @@ const CapturedImage = ({ photo, show, capturedImage, pixels, setPixels }) => {
       <TouchableWithoutFeedback onPress={handlePress}>
         <View style={{ flex: 1 }}>
           {circlePosition && (
-            <View
-              style={{
-                position: "absolute",
-                width: 30,
-                height: 30,
-                borderRadius: 15,
-                backgroundColor: `rgb(${
-                  pixels[circlePosition.y][circlePosition.x][0]
-                }, ${pixels[circlePosition.y][circlePosition.x][1]}, ${
-                  pixels[circlePosition.y][circlePosition.x][2]
-                })`,
-                zIndex: 999,
-                left: circlePosition.x - 15,
-                top: circlePosition.y - 15,
-              }}
-            />
+            <ColorLabel pixels={pixels} circlePosition={circlePosition} />
           )}
           <ImageBackground
             source={{ uri: photo && photo.uri }}
@@ -183,6 +170,27 @@ const CapturedImage = ({ photo, show, capturedImage, pixels, setPixels }) => {
           />
         </View>
       </TouchableWithoutFeedback>
+    </View>
+  );
+};
+
+const ColorLabel = ({ circlePosition }) => {
+  return (
+    <View
+      style={{
+        position: "absolute",
+        width: 100,
+        height: 40,
+        borderRadius: 15,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "white",
+        zIndex: 999,
+        left: circlePosition.x - 50,
+        top: circlePosition.y - 90,
+      }}
+    >
+      <Text style={{ textAlign: "center" }}>Hello!</Text>
     </View>
   );
 };
