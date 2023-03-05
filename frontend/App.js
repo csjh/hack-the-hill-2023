@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import Svg, { Path } from "react-native-svg";
-import FileSystem from "expo-file-system";
 
 const PlayButton = () => {
   return (
@@ -47,7 +46,6 @@ export default function App() {
     } else {
       await requestPermissions();
       const photo = await this.camera.takePictureAsync({ skipProcessing: true });
-      console.log(photo);
       setCapturedImage(photo);
       setPaused(true);
     }
