@@ -39,7 +39,6 @@ export default function App() {
 
   const requestPermissions = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
-    console.log("status ", status);
     if (status !== "granted") {
       Alert.alert("Camera access is required to use Colour Sense!");
     }
@@ -58,8 +57,7 @@ export default function App() {
         [{ resize: { width: Dimensions.get("screen").width } }],
         { compress: 0, format: "png", base64: true }
       );
-      console.log("photo ", manipulatedPhoto.height, manipulatedPhoto.width);
-      console.log("i'm here");
+      console.log("Photo Size", manipulatedPhoto.height, manipulatedPhoto.width);
       setPaused(true);
       setCapturedImage(manipulatedPhoto);
       fetch("https://hack-the-north.onrender.com/get_all_pixels", {
@@ -70,7 +68,7 @@ export default function App() {
         }),
       })
         .then((r) => r.json())
-        .then(setPixels);
+        .then((r) => {setPixels(r); console.log("Received data")});
     }
   };
   return (
@@ -194,13 +192,13 @@ const ColorLabel = ({ circlePosition, pixels }) => {
       <View
         style={{
           position: "absolute",
-          width: 30,
-          height: 30,
+          width: 20,
+          height: 20,
           borderRadius: 15,
           borderWidth: 1,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "transparent",
+          backgroundColor: `#${pixels[circlePosition.y][circlePosition.x][0].toString(16).padStart(2)}${pixels[circlePosition.y][circlePosition.x][1].toString(16).padStart(2)}${pixels[circlePosition.y][circlePosition.x][2].toString(16).padStart(2)}`,
           zIndex: 999,
           left: circlePosition.x - 15,
           top: circlePosition.y - 15,
