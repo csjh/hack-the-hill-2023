@@ -11,8 +11,16 @@ detector.loadModel()
 
 app = flask.Flask(__name__)
 
+cache = None
 
-@app.route('/', methods=['POST'])
+@app.route("/get_all_pixels", methods=["POST"])
+def get_pixel():
+    image = flask.request.json['image']
+    image = Image.open(BytesIO(base64.b64decode(image)))
+    pixels = [[image.get_pixel((x, y)) for x in range(image.width)] for y in range(image.height)]
+    return str(pixels)
+
+@app.route('/get_objects', methods=['POST'])
 def index():
     image = flask.request.json['image']
     image = base64.b64decode(image)
